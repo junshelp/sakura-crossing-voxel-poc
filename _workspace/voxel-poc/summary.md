@@ -16,8 +16,8 @@ Implement and validate the approved Voxel Crossing PoC through packages W001-W00
 | Package | State | Result | Review | Commit |
 |---|---|---|---|---|
 | W001 | COMMITTED | `results/W001.md` | `reviews/W001.md` PASS | this package commit |
-| W002 | READY | — | — | — |
-| W003 | BLOCKED_BY_W002 | — | — | — |
+| W002 | COMMITTED | `results/W002.md` | `reviews/W002.md` PASS | this package commit |
+| W003 | READY | — | — | — |
 | W004 | BLOCKED_BY_W003 | — | — | — |
 | W005 | BLOCKED_BY_W004 | — | — | — |
 | W006 | BLOCKED_BY_W005 | — | — | — |
@@ -32,4 +32,4 @@ Implement and validate the approved Voxel Crossing PoC through packages W001-W00
 
 ## Next Action
 
-Create and assign W002.
+Create and assign W003.
