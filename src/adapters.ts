@@ -3,6 +3,7 @@ import type { RendererAdapter, SharedSceneSpecification } from './scene-spec';
 
 function addBoxes(spec: SharedSceneSpecification, host: THREE.Object3D, voxel: boolean, geometries: THREE.BufferGeometry[], materials: THREE.Material[]): void {
   for (const entity of spec.entities) {
+    if (entity.kind === 'road' || entity.kind === 'footway' || entity.kind === 'rail' || entity.kind === 'wire') continue;
     const color = entity.kind === 'ground' ? 0x254a5c : voxel ? 0xf5c04a : 0xed6f8e;
     const geometry = new THREE.BoxGeometry(...entity.transform.scale);
     const material = new THREE.MeshBasicMaterial({ color, wireframe: voxel });
@@ -10,6 +11,7 @@ function addBoxes(spec: SharedSceneSpecification, host: THREE.Object3D, voxel: b
     const mesh = new THREE.Mesh(geometry, material);
     mesh.name = entity.id;
     mesh.position.set(...entity.transform.position);
+    mesh.rotation.set(...entity.transform.rotation);
     host.add(mesh);
   }
 }
