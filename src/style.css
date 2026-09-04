@@ -1,1 +1,14 @@
-:root { font-family: system-ui, sans-serif; color: #fff; background: #101827; } * { box-sizing: border-box; } body { margin: 0; overflow: hidden; } #scene-root, #scene-root canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; } #hud { position: fixed; z-index: 1; top: 1rem; left: 1rem; display: flex; gap: .75rem; align-items: center; padding: .7rem 1rem; border: 1px solid #ffffff44; border-radius: .5rem; background: #101827dd; } #mode-label { font-weight: 700; } button { color: #101827; background: #f5c04a; border: 0; border-radius: .3rem; padding: .45rem .7rem; cursor: pointer; }
+:root { font-family: system-ui, sans-serif; color: #fff; background: #101827; }
+* { box-sizing: border-box; }
+body { margin: 0; overflow: hidden; }
+#scene-root, #scene-root canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+#hud { position: fixed; z-index: 1; top: 1rem; left: 1rem; max-width: min(39rem, calc(100vw - 2rem)); display: grid; gap: .45rem; padding: .7rem 1rem; border: 1px solid #ffffff44; border-radius: .5rem; background: #101827dd; backdrop-filter: blur(5px); }
+.hud-row { display: flex; gap: .65rem; align-items: center; flex-wrap: wrap; }
+.telemetry { color: #c4d7e4; font-variant-numeric: tabular-nums; font-size: .82rem; }
+.markers { font-size: .8rem; }
+#active-marker { color: #f5c04a; min-width: 3.5rem; }
+#controls-hint { margin: .1rem 0 0; color: #b5c4d0; font-size: .75rem; }
+#mode-label { font-weight: 700; }
+button { color: #101827; background: #f5c04a; border: 0; border-radius: .3rem; padding: .45rem .7rem; cursor: pointer; }
+button:hover, button:focus-visible { background: #ffe39a; }
+.marker-button { padding: .28rem .45rem; font-size: .75rem; }

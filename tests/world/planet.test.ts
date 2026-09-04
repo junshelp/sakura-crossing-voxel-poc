@@ -12,7 +12,7 @@ describe('planet coordinate system', () => {
     expect(PLANET_CIRCUMFERENCE).toBeCloseTo(2 * Math.PI * PLANET_RADIUS);
   });
 
-  it('wraps circumference and keeps both separated equatorial rails closed at radius R', () => {
+  it('wraps circumference and keeps both separated top-origin rails closed at radius R', () => {
     expect(wrapPlanetX(0)).toBe(0);
     expect(wrapPlanetX(PLANET_CIRCUMFERENCE)).toBeCloseTo(0);
     expect(wrapPlanetX(-PLANET_CIRCUMFERENCE)).toBeCloseTo(0);
@@ -25,6 +25,18 @@ describe('planet coordinate system', () => {
     const southRail = equatorialRailwayPosition(Math.PI / 3, -0.75);
     expect(northRail.distanceTo(southRail)).toBeCloseTo(2 * PLANET_RADIUS * Math.sin(0.75 / PLANET_RADIUS), 6);
     expect(northRail.distanceTo(southRail)).toBeGreaterThan(1.49);
+  });
+
+  it('follows authored flat +x/east and is equivalent to the surface projection', () => {
+    const lane = 0.75;
+    const origin = equatorialRailwayPosition(0, lane);
+    expect(origin.x).toBeCloseTo(0, 6);
+    expect(origin.z).toBeCloseTo(lane, 3);
+    expect(origin.y).toBeCloseTo(0, 2);
+    const ahead = equatorialRailwayPosition(1e-4, lane);
+    expect(ahead.x).toBeGreaterThan(origin.x);
+    expect(ahead.z).toBeCloseTo(origin.z, 5);
+    closeVector(equatorialRailwayPosition(0.37, lane), surfacePosition(0.37 * PLANET_RADIUS, lane));
   });
 
   it('maps representative latitude and local height along the surface up vector', () => {

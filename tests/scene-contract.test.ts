@@ -29,7 +29,7 @@ describe('Shared Scene Specification', () => {
     expect(Object.isFrozen(SAMPLE_SCENE.entities[1].interactions)).toBe(true);
     expect(Object.isFrozen(SAMPLE_SCENE.benchmarkCameraMarkers.overview)).toBe(true);
     const adapter = new BaselineAdapter(); const host = new THREE.Group(); adapter.mount(SAMPLE_SCENE, host);
-    const mesh = host.children[0] as THREE.Mesh; const geometryDispose = vi.spyOn(mesh.geometry, 'dispose'); const materialDispose = vi.spyOn(mesh.material as THREE.Material, 'dispose');
+    const mesh = host.getObjectByName('crossing-deck') as THREE.Mesh; const geometryDispose = vi.spyOn(mesh.geometry, 'dispose'); const materialDispose = vi.spyOn(mesh.material as THREE.Material, 'dispose');
     adapter.dispose(); expect(geometryDispose).toHaveBeenCalledOnce(); expect(materialDispose).toHaveBeenCalledOnce();
   });
   it('rejects duplicate ids, invalid colliders, invalid interaction owners, and missing markers', () => {

@@ -1,17 +1,26 @@
 import { test, expect } from '@playwright/test';
-test('tracer renders and mode switches without rebuilding shared infrastructure', async ({ page }) => {
+test('baseline slice renders, fixed cameras work, and mode switch preserves live state/infrastructure', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('canvas')).toBeVisible();
   await expect(page.locator('#mode-label')).toHaveText('Baseline Mode');
   const root = page.locator('#scene-root');
+  await expect(root).toHaveAttribute('data-baseline-entity-count', '17');
+  await expect(page.locator('#telemetry-frame')).toContainText('Frame');
+  await expect(page.locator('#telemetry-draw')).toContainText('Draw');
+  await expect(page.locator('#telemetry-triangles')).toContainText('Triangles');
   const infrastructureId = await root.getAttribute('data-continuous-infrastructure-id');
   expect(infrastructureId).toBeTruthy();
   await expect(root).toHaveAttribute('data-continuous-infrastructure-name', 'continuous-infrastructure');
   const childCount = await root.getAttribute('data-continuous-infrastructure-child-count');
   expect(childCount).toBeTruthy();
+  await page.locator('[data-marker="crossing"]').click();
+  await expect(root).toHaveAttribute('data-active-marker', 'crossing');
+  const playerBefore = await Promise.all(['x', 'z', 'yaw', 'pitch'].map((axis) => root.getAttribute(`data-player-${axis}`)));
   await page.locator('#mode-toggle').click();
   await expect(page.locator('#mode-label')).toHaveText('Voxel Mode');
   await expect(page.locator('canvas')).toBeVisible();
+  const playerAfter = await Promise.all(['x', 'z', 'yaw', 'pitch'].map((axis) => root.getAttribute(`data-player-${axis}`)));
+  expect(playerAfter).toEqual(playerBefore);
   await expect(root).toHaveAttribute('data-continuous-infrastructure-id', infrastructureId!);
   await expect(root).toHaveAttribute('data-continuous-infrastructure-child-count', childCount!);
 });

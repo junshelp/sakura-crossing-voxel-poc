@@ -7,6 +7,8 @@ describe('shared Continuous Infrastructure', () => {
     const names = infrastructure.root.children.map((child) => child.name);
     expect(names).toEqual(expect.arrayContaining(['planet-surface', 'road-tracer', 'footway-tracer', 'equatorial-rail-east', 'equatorial-rail-west', 'utility-wire-main', 'utility-wire-secondary']));
     expect(infrastructure.root.name).toBe('continuous-infrastructure');
+    expect(infrastructure.root.getObjectByName('road-tracer')?.userData.flatAxis).toBe('north-south');
+    expect(infrastructure.root.getObjectByName('footway-tracer')?.userData.flatAxis).toBe('north-south');
     expect(infrastructure.root.getObjectByName('equatorial-rail-east')?.userData.railLoop).toEqual({ closed: true, railCount: 2, radius: 160, gauge: 1.5, laneOffsetAxis: 'north-south-surface-arc' });
     expect(infrastructure.root.getObjectByName('equatorial-rail-east')?.userData.closed).toBe(true);
     infrastructure.dispose();

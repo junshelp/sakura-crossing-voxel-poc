@@ -43,11 +43,9 @@ export const flatToSphere = surfacePosition;
 
 export function projectFlatPoint(point: FlatPoint): THREE.Vector3 { return surfacePosition(point.x, point.z, point.y ?? 0); }
 
-/** Return a point on the closed equatorial railway loop. laneOffset is a north/south surface arc distance. */
+/** Return a point on the closed east/west railway loop through the top-origin crossing. */
 export function equatorialRailwayPosition(angle: number, laneOffset = 0): THREE.Vector3 {
-  const latitude = laneOffset / PLANET_RADIUS;
-  const horizontalRadius = PLANET_RADIUS * Math.cos(latitude);
-  return new THREE.Vector3(horizontalRadius * Math.sin(angle), PLANET_CENTER.y + PLANET_RADIUS * Math.sin(latitude), horizontalRadius * Math.cos(angle));
+  return surfacePosition(angle * PLANET_RADIUS, laneOffset);
 }
 export const railwayPosition = equatorialRailwayPosition;
 

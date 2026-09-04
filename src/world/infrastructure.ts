@@ -27,17 +27,19 @@ export function createContinuousInfrastructure(): ContinuousInfrastructureHandle
   root.name = 'continuous-infrastructure';
 
   const planetGeometry = new THREE.SphereGeometry(PLANET_RADIUS, 64, 32);
-  const planetMaterial = new THREE.MeshBasicMaterial({ color: 0x17384a, wireframe: true, transparent: true, opacity: 0.2, side: THREE.DoubleSide });
+  const planetMaterial = new THREE.MeshStandardMaterial({ color: 0x31566a, roughness: 0.96, metalness: 0, side: THREE.FrontSide });
   const planet = new THREE.Mesh(planetGeometry, planetMaterial);
   planet.name = 'planet-surface';
   planet.position.copy(PLANET_CENTER);
   planet.userData.continuousInfrastructure = true;
   root.add(planet);
 
-  const road = flatPath(65, (t) => ({ x: -29 + 58 * t, y: 0.12, z: 7 + Math.sin(t * Math.PI * 2) * 2 }));
+  const road = flatPath(65, (t) => ({ x: 0, y: 0.12, z: -29 + 58 * t + Math.sin(t * Math.PI * 2) * 0.6 }));
   addTube(root, 'road-tracer', road, 1.45, 0x6f7880);
-  const footway = flatPath(65, (t) => ({ x: -29 + 58 * t, y: 0.3, z: 10 + Math.sin(t * Math.PI * 2) * 2 }));
+  root.getObjectByName('road-tracer')!.userData.flatAxis = 'north-south';
+  const footway = flatPath(65, (t) => ({ x: 4.5, y: 0.3, z: -29 + 58 * t + Math.sin(t * Math.PI * 2) * 0.6 }));
   addTube(root, 'footway-tracer', footway, 0.5, 0xd6cdb8);
+  root.getObjectByName('footway-tracer')!.userData.flatAxis = 'north-south';
 
   const railPoints = (laneOffset: number) => Array.from({ length: 96 }, (_, index) => equatorialRailwayPosition((index / 96) * Math.PI * 2, laneOffset));
   addTube(root, 'equatorial-rail-east', railPoints(0.75), 0.14, 0xd4d5d8, true);
