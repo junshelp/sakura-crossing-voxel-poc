@@ -18,7 +18,12 @@ describe('Shared Scene Specification', () => {
     const baselineMount = vi.spyOn(BaselineAdapter.prototype, 'mount'); const voxelMount = vi.spyOn(VoxelAdapter.prototype, 'mount');
     new BaselineAdapter().mount(SAMPLE_SCENE, a); new VoxelAdapter().mount(SAMPLE_SCENE, b);
     expect(baselineMount.mock.calls[0]?.[0]).toBe(SAMPLE_SCENE); expect(voxelMount.mock.calls[0]?.[0]).toBe(SAMPLE_SCENE);
-    expect(JSON.stringify(SAMPLE_SCENE)).toBe(before); expect(a.children[0].name).toBe(b.children[0].name); expect(a.children.length).toBe(b.children.length); expect((a.children[1] as THREE.Mesh).material).not.toBe((b.children[1] as THREE.Mesh).material);
+    expect(JSON.stringify(SAMPLE_SCENE)).toBe(before); expect(a.children[0].name).toBe(b.children[0].name); expect(a.children.length).toBe(b.children.length);
+    const baselineMesh = a.getObjectByName('crossing-deck') as THREE.Mesh;
+    let voxelMesh: THREE.Mesh | undefined;
+    b.traverse((object) => { if (!voxelMesh && (object as THREE.Mesh).isMesh && object.name.includes('--opaque')) voxelMesh = object as THREE.Mesh; });
+    expect(voxelMesh).toBeTruthy();
+    expect(baselineMesh.material).not.toBe(voxelMesh!.material);
     for (const child of [...a.children, ...b.children]) expect(child.userData).not.toHaveProperty('collider');
     baselineMount.mockRestore(); voxelMount.mockRestore();
   });

@@ -57,12 +57,17 @@ function updateHooks(): void {
   sceneRoot.dataset.mode = adapter.name;
   sceneRoot.dataset.baselineEntityCount = String(adapterRoot.userData.baselineEntityIds?.length ?? 0);
   sceneRoot.dataset.voxelEntityCount = String(adapterRoot.userData.voxelEntityIds?.length ?? 0);
+  sceneRoot.dataset.voxelChunkMeshCount = String(adapterRoot.userData.voxelChunkMeshCount ?? 0);
+  sceneRoot.dataset.voxelUniqueMaterialCount = String(adapterRoot.userData.voxelUniqueMaterialCount ?? 0);
+  sceneRoot.dataset.voxelAtlasTextureCount = String(adapterRoot.userData.voxelAtlasTextureCount ?? 0);
+  sceneRoot.dataset.sampleSceneReference = String(SAMPLE_SCENE.seed);
   sceneRoot.dataset.activeMarker = activeMarker;
   hudActiveMarker.textContent = activeMarker === 'free' ? 'Free' : activeMarker;
 }
 function updatePlayerHook(): void {
   sceneRoot.dataset.playerX = player.x.toFixed(3);
   sceneRoot.dataset.playerZ = player.z.toFixed(3);
+  sceneRoot.dataset.playerEyeHeight = player.eyeHeight.toFixed(3);
   sceneRoot.dataset.playerYaw = player.yaw.toFixed(3);
   sceneRoot.dataset.playerPitch = player.pitch.toFixed(3);
 }
@@ -111,6 +116,7 @@ function frame(): void {
     const frameMs = dt * 1000; hudTelemetryFrame.textContent = `Frame ${frameMs.toFixed(1)} ms`;
     hudTelemetryDraw.textContent = renderer ? `Draw ${renderer.info.render.calls}` : 'Draw —';
     hudTelemetryTriangles.textContent = renderer ? `Triangles ${renderer.info.render.triangles}` : 'Triangles —'; telemetryAt = now;
+    sceneRoot.dataset.rendererDrawCalls = renderer ? String(renderer.info.render.calls) : '0';
   }
   requestAnimationFrame(frame);
 }
