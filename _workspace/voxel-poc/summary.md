@@ -15,8 +15,8 @@ Implement and validate the approved Voxel Crossing PoC through packages W001-W00
 
 | Package | State | Result | Review | Commit |
 |---|---|---|---|---|
-| W001 | READY | — | — | — |
-| W002 | BLOCKED_BY_W001 | — | — | — |
+| W001 | COMMITTED | `results/W001.md` | `reviews/W001.md` PASS | this package commit |
+| W002 | READY | — | — | — |
 | W003 | BLOCKED_BY_W002 | — | — | — |
 | W004 | BLOCKED_BY_W003 | — | — | — |
 | W005 | BLOCKED_BY_W004 | — | — | — |
@@ -32,4 +32,4 @@ Implement and validate the approved Voxel Crossing PoC through packages W001-W00
 
 ## Next Action
 
-Commit and push the Harness, then create and assign W001.
+Create and assign W002.

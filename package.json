@@ -1,0 +1,22 @@
+{
+  "name": "sakura-crossing-voxel-poc",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --exclude tests/e2e/**",
+    "build": "vite build",
+    "test:e2e": "playwright test",
+    "check": "npm run typecheck && npm test && npm run build"
+  },
+  "dependencies": { "three": "^0.179.1" },
+  "devDependencies": {
+    "@playwright/test": "^1.54.1",
+    "@types/three": "^0.179.0",
+    "vitest": "^3.2.4",
+    "typescript": "^5.8.3",
+    "vite": "^7.0.6"
+  }
+}

@@ -1,0 +1,2 @@
+import { test, expect } from '@playwright/test';
+test('tracer renders and mode switches', async ({ page }) => { await page.goto('/'); await expect(page.locator('canvas')).toBeVisible(); await expect(page.locator('#mode-label')).toHaveText('Baseline Mode'); await page.locator('#mode-toggle').click(); await expect(page.locator('#mode-label')).toHaveText('Voxel Mode'); await expect(page.locator('canvas')).toBeVisible(); });
