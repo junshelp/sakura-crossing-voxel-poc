@@ -113,6 +113,10 @@ function createBicycleAsset(): VoxelAsset {
 
 function createMarkerAsset(): VoxelAsset { return asset('crossing-marker', [{ x: 0, y: 0, z: 0, paletteId: 'marker' }]); }
 function createPetalAsset(): VoxelAsset { return asset('petal-drift', [{ x: 0, y: 0, z: 0, paletteId: 'petal' }]); }
+function createDispensedDrinkAsset(): VoxelAsset {
+  const cells: Cell[] = [{ x: 0, y: 0, z: 0, paletteId: 'accent' }, { x: 0, y: 1, z: 0, paletteId: 'metal' }];
+  return asset('dispensed-drink', cells);
+}
 
 /** Deterministic visual assets; gameplay fields intentionally cannot enter this type. */
 export const VOXEL_ASSETS: Readonly<Record<string, VoxelAsset>> = Object.freeze({
@@ -131,6 +135,7 @@ export const VOXEL_ASSETS: Readonly<Record<string, VoxelAsset>> = Object.freeze(
   bicycle: createBicycleAsset(),
   marker: createMarkerAsset(),
   petal: createPetalAsset(),
+  'dispensed-drink': createDispensedDrinkAsset(),
 });
 
 export const VOXEL_ASSET_IDS = Object.freeze(Object.keys(VOXEL_ASSETS));

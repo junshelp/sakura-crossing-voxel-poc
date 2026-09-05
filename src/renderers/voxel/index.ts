@@ -119,7 +119,11 @@ export class VoxelAdapter implements RendererAdapter {
     if (entity.kind === 'petal') { this.addPetals(entity, host, seed); return; }
     const group = this.entityRoot(entity, host); this.addCompiledAsset(entity, group);
     if (entity.kind === 'shop') this.addSign(group, entity.id, 2.4, 0.6, entity.transform.scale[2], 0);
-    else if (entity.kind === 'vending-machine') this.addSign(group, entity.id, 1.0, 0.4, entity.transform.scale[2], 1);
+    else if (entity.kind === 'vending-machine') {
+      this.addSign(group, entity.id, 1.0, 0.4, entity.transform.scale[2], 1);
+      const drink = new THREE.Group(); drink.name = 'vending-machine-main-dispensed-drink'; drink.position.set(0, 0.3, entity.transform.scale[2] / 2 + 0.18); drink.visible = false; group.add(drink);
+      this.addCompiledAsset(entity, drink, getVoxelAssetForEntity('dispensed-drink'));
+    }
     else if (entity.kind === 'relay-box') this.addSign(group, entity.id, 0.9, 0.4, entity.transform.scale[2], 2);
   }
 

@@ -32,7 +32,7 @@ describe('approved deterministic Voxel Assets', () => {
   it('maps every non-infrastructure scene kind and every special rig part', () => {
     const infrastructure = new Set(['ground', 'road', 'footway', 'rail', 'wire']);
     for (const entity of SAMPLE_SCENE.entities) if (!infrastructure.has(entity.kind)) expect(getVoxelAssetForEntity(entity.kind, entity.visual.variant), entity.id).toBeTruthy();
-    for (const id of ['crossing', 'crossing-barrier', 'crossing-warning-light', 'train', 'shop', 'house-blue', 'house-tile', 'vending-machine', 'relay-box', 'utility-pole', 'fence', 'cherry-tree', 'bicycle', 'marker', 'petal']) expect(VOXEL_ASSETS[id], id).toBeTruthy();
+    for (const id of ['crossing', 'crossing-barrier', 'crossing-warning-light', 'train', 'shop', 'house-blue', 'house-tile', 'vending-machine', 'dispensed-drink', 'relay-box', 'utility-pole', 'fence', 'cherry-tree', 'bicycle', 'marker', 'petal']) expect(VOXEL_ASSETS[id], id).toBeTruthy();
   });
 
   it('is byte-equivalent and duplicate-free across repeated builds', () => {

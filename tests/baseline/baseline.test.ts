@@ -16,6 +16,8 @@ describe('Baseline procedural slice', () => {
     expect(host.getObjectByName('crossing-barrier-west-pivot')).toBeTruthy();
     expect(host.getObjectByName('crossing-warning-light-east')).toBeTruthy();
     expect(host.getObjectByName('crossing-warning-light-west')).toBeTruthy();
+    expect(host.getObjectByName('vending-machine-main-dispensed-drink')).toBeTruthy();
+    expect(host.getObjectByName('vending-machine-main-dispensed-drink')!.visible).toBe(false);
     expect(host.getObjectByName('train-car-a')).toBeTruthy(); expect(host.getObjectByName('train-car-b')).toBeTruthy();
     expect(host.getObjectByName('train-car-a-pivot')).toBeTruthy(); expect(host.getObjectByName('train-car-b-pivot')).toBeTruthy();
     const cars: THREE.Object3D[] = []; host.traverse((object) => { if (/^train-car-[ab]$/.test(object.name)) cars.push(object); });

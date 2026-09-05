@@ -8,6 +8,9 @@ body { margin: 0; overflow: hidden; }
 .markers { font-size: .8rem; }
 #active-marker { color: #f5c04a; min-width: 3.5rem; }
 #controls-hint { margin: .1rem 0 0; color: #b5c4d0; font-size: .75rem; }
+#interaction-prompt { background: #ed6f8e; color: #fff; }
+#interaction-prompt:hover, #interaction-prompt:focus-visible { background: #ff99ac; }
+#interaction-state { color: #ffd6df; font-size: .8rem; }
 #mode-label { font-weight: 700; }
 button { color: #101827; background: #f5c04a; border: 0; border-radius: .3rem; padding: .45rem .7rem; cursor: pointer; }
 button:hover, button:focus-visible { background: #ffe39a; }

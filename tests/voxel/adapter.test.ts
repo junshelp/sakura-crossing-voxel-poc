@@ -27,6 +27,8 @@ describe('Voxel adapter batching and parity', () => {
     expect(eastLocal.position.x + eastLocal.geometry.boundingBox!.max.x).toBeLessThanOrEqual(0);
     expect(westLocal.position.x + westLocal.geometry.boundingBox!.min.x).toBeGreaterThanOrEqual(0);
     expect(host.getObjectByName('train-car-a')).toBeTruthy(); expect(host.getObjectByName('train-car-b')).toBeTruthy();
+    expect(host.getObjectByName('vending-machine-main-dispensed-drink')).toBeTruthy();
+    expect(host.getObjectByName('vending-machine-main-dispensed-drink')!.visible).toBe(false);
     const a = host.getObjectByName('train-car-a')!; const b = host.getObjectByName('train-car-b')!;
     expect(a.position.x).toBeLessThan(b.position.x); expect(a.position.x + 3.5).toBeLessThan(b.position.x);
     expect(host.userData.voxelEntityIds).toHaveLength(17); expect(host.userData.voxelChunkMeshCount).toBeGreaterThan(0);

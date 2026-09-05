@@ -3,7 +3,9 @@ import './style.css';
 import { BaselineAdapter, VoxelAdapter } from './adapters';
 import { assertValidSharedScene, SAMPLE_SCENE, type RendererAdapter } from './scene-spec';
 import { createContinuousInfrastructure } from './world';
-import { applyLook, createPlayerState, DEFAULT_EYE_HEIGHT, movePlayer, playerStateFromMarker, updateCameraFromPlayer, type PlayerState } from './gameplay';
+import { activateCurrentInteraction, applyLook, createPlayerState, DEFAULT_EYE_HEIGHT, movePlayer, playerStateFromMarker, resolveInteraction, type ResolvedInteraction, updateCameraFromPlayer, type PlayerState } from './gameplay';
+import { createCrossingSimulation } from './simulation';
+import { applySimulationSnapshot } from './runtime/visual-binding';
 
 const root = document.querySelector<HTMLDivElement>('#scene-root');
 const modeLabel = document.querySelector<HTMLSpanElement>('#mode-label');
@@ -12,7 +14,9 @@ const activeMarkerLabel = document.querySelector<HTMLSpanElement>('#active-marke
 const telemetryFrame = document.querySelector<HTMLSpanElement>('#telemetry-frame');
 const telemetryDraw = document.querySelector<HTMLSpanElement>('#telemetry-draw');
 const telemetryTriangles = document.querySelector<HTMLSpanElement>('#telemetry-triangles');
-if (!root || !modeLabel || !modeToggle || !activeMarkerLabel || !telemetryFrame || !telemetryDraw || !telemetryTriangles) throw new Error('Playable HUD is incomplete');
+const interactionPrompt = document.querySelector<HTMLButtonElement>('#interaction-prompt');
+const interactionState = document.querySelector<HTMLSpanElement>('#interaction-state');
+if (!root || !modeLabel || !modeToggle || !activeMarkerLabel || !telemetryFrame || !telemetryDraw || !telemetryTriangles || !interactionPrompt || !interactionState) throw new Error('Playable HUD is incomplete');
 const sceneRoot = root;
 const hudModeLabel = modeLabel;
 const hudModeToggle = modeToggle;
@@ -20,6 +24,8 @@ const hudActiveMarker = activeMarkerLabel;
 const hudTelemetryFrame = telemetryFrame;
 const hudTelemetryDraw = telemetryDraw;
 const hudTelemetryTriangles = telemetryTriangles;
+const hudInteractionPrompt = interactionPrompt;
+const hudInteractionState = interactionState;
 assertValidSharedScene(SAMPLE_SCENE);
 
 const scene = new THREE.Scene();
@@ -47,11 +53,33 @@ try {
 }
 
 let adapter: RendererAdapter = new BaselineAdapter();
+const simulation = createCrossingSimulation();
 const player: PlayerState = createPlayerState(0, 18);
 const keys = new Set<string>();
 let lastFrame = performance.now();
 let telemetryAt = lastFrame;
 let activeMarker = 'free';
+let currentInteraction: ResolvedInteraction | null = null;
+
+function updateInteractionHooks(): void {
+  currentInteraction = resolveInteraction(SAMPLE_SCENE, player);
+  sceneRoot.dataset.currentInteractionId = currentInteraction?.interactionId ?? '';
+  sceneRoot.dataset.currentInteractionLabel = currentInteraction?.label ?? '';
+  hudInteractionPrompt.hidden = !currentInteraction;
+  hudInteractionPrompt.textContent = currentInteraction ? `E · ${currentInteraction.label}` : 'No interaction in range';
+  hudInteractionState.textContent = currentInteraction ? `${currentInteraction.label} (${currentInteraction.distance.toFixed(1)} m)` : 'No interaction in range';
+}
+
+function updateSimulationHooks(): void {
+  const snapshot = simulation.snapshot;
+  sceneRoot.dataset.crossingPhase = snapshot.crossingPhase;
+  sceneRoot.dataset.trainOffset = snapshot.trainOffset.toFixed(3);
+  sceneRoot.dataset.barrierClosure = snapshot.barrierClosure.toFixed(3);
+  sceneRoot.dataset.barrierClosed = String(snapshot.barrierClosed);
+  sceneRoot.dataset.warningActive = String(snapshot.warningActive);
+  sceneRoot.dataset.dispensedDrink = String(snapshot.dispensedDrink);
+  applySimulationSnapshot(adapterRoot, snapshot);
+}
 
 function updateHooks(): void {
   sceneRoot.dataset.mode = adapter.name;
@@ -63,6 +91,8 @@ function updateHooks(): void {
   sceneRoot.dataset.sampleSceneReference = String(SAMPLE_SCENE.seed);
   sceneRoot.dataset.activeMarker = activeMarker;
   hudActiveMarker.textContent = activeMarker === 'free' ? 'Free' : activeMarker;
+  updateSimulationHooks();
+  updateInteractionHooks();
 }
 function updatePlayerHook(): void {
   sceneRoot.dataset.playerX = player.x.toFixed(3);
@@ -82,6 +112,12 @@ function toggleMode(): void { mountMode(adapter.name === 'baseline' ? new VoxelA
 hudModeToggle.addEventListener('click', toggleMode);
 adapter.mount(SAMPLE_SCENE, adapterRoot); hudModeLabel.textContent = 'Baseline Mode'; updateHooks(); updatePlayerHook();
 
+function activateCurrent(): void {
+  const result = activateCurrentInteraction(simulation, SAMPLE_SCENE, player);
+  if (result.activated) { updateSimulationHooks(); updateInteractionHooks(); }
+}
+hudInteractionPrompt.addEventListener('click', (event) => { event.stopPropagation(); activateCurrent(); });
+
 function setMarker(name: string): void {
   const marker = SAMPLE_SCENE.benchmarkCameraMarkers[name];
   if (!marker) return;
@@ -93,6 +129,7 @@ addEventListener('keydown', (event) => {
   if (event.key === '1') setMarker('overview');
   else if (event.key === '2') setMarker('crossing');
   else if (event.key === '3') setMarker('railway');
+  else if (event.key.toLowerCase() === 'e') { event.preventDefault(); activateCurrent(); }
   else keys.add(event.key.toLowerCase());
 });
 addEventListener('keyup', (event) => keys.delete(event.key.toLowerCase()));
@@ -111,6 +148,7 @@ function frame(): void {
   const input = readMovement();
   if (activeMarker !== 'free' && (input.forward !== 0 || input.strafe !== 0)) { player.eyeHeight = DEFAULT_EYE_HEIGHT; activeMarker = 'free'; updateHooks(); }
   const next = movePlayer(player, input, dt, SAMPLE_SCENE); Object.assign(player, next); updatePlayerHook(); updateCameraFromPlayer(camera, player);
+  simulation.step(dt); updateSimulationHooks(); updateInteractionHooks();
   if (renderer) renderer.render(scene, camera);
   if (now - telemetryAt >= 200) {
     const frameMs = dt * 1000; hudTelemetryFrame.textContent = `Frame ${frameMs.toFixed(1)} ms`;

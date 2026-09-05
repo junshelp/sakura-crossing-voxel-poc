@@ -128,6 +128,11 @@ export class BaselineAdapter implements RendererAdapter {
     this.mesh(this.box([width, height, depth]), relay ? 'metal' : 'accent', `${entity.id}-body`, group).position.y = height / 2;
     const panel = this.mesh(this.box([width * 0.7, height * 0.38, 0.04]), relay ? 'metal' : 'glass', `${entity.id}-panel`, group); panel.position.set(0, height * 0.62, depth / 2 + 0.03);
     const light = this.mesh(this.sphere(0.09), 'emissive', `${entity.id}-status-light`, group); light.position.set(width * 0.3, height * 0.2, depth / 2 + 0.04);
+    if (!relay) {
+      const drink = this.mesh(this.cylinder(0.11, 0.24, 8), 'accent', 'vending-machine-main-dispensed-drink', group);
+      drink.position.set(0, height * 0.16, depth / 2 + 0.14);
+      drink.visible = false;
+    }
   }
 
   private addPole(entity: SceneEntity, host: THREE.Object3D): void {

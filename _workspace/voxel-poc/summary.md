@@ -7,7 +7,7 @@ Implement and validate the approved Voxel Crossing PoC through packages W001-W00
 ## Current State
 
 - Harness draft: approved for commit and push
-- Implementation packages: W001-W005 verified and committed/pending commit
+- Implementation packages: W001-W006 verified and committed/pending commit
 - Visual Acceptance: pending
 - GitHub publication beyond the existing PRD issue: not authorized
 
@@ -20,8 +20,8 @@ Implement and validate the approved Voxel Crossing PoC through packages W001-W00
 | W003 | COMMITTED | `results/W003.md` | `reviews/W003.md` PASS | this package commit |
 | W004 | COMMITTED | `results/W004.md` | `reviews/W004.md` PASS | this package commit |
 | W005 | COMMITTED | `results/W005.md` | `reviews/W005.md` PASS | this package commit |
-| W006 | READY | — | — | — |
-| W007 | BLOCKED_BY_W006 | — | — | — |
+| W006 | COMMITTED | `results/W006.md` | `reviews/W006.md` PASS | this package commit |
+| W007 | READY | — | — | — |
 
 ## Approval Ledger
 
@@ -32,4 +32,4 @@ Implement and validate the approved Voxel Crossing PoC through packages W001-W00
 
 ## Next Action
 
-Create and assign W006.
+Assign W007 and capture production benchmark evidence after implementation.
