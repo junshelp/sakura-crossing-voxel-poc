@@ -1,0 +1,124 @@
+{
+  "schema": "sakura-crossing-benchmark/v1",
+  "diagnostic": true,
+  "seed": 20260904,
+  "durations": {
+    "warmupMs": 200,
+    "sampleMs": 600
+  },
+  "legs": [
+    {
+      "mode": "baseline",
+      "index": 0,
+      "sampleCount": 54,
+      "p50FrameMs": 9.5,
+      "p95FrameMs": 16.47000002861023,
+      "meanFrameMs": 10.82592592415986,
+      "medianDrawCalls": 49,
+      "triangles": 16296,
+      "textureCount": 0,
+      "shaderProgramCount": 4,
+      "mountMs": 1.0999999046325684,
+      "generatedGeometryBytes": 43356
+    },
+    {
+      "mode": "voxel",
+      "index": 1,
+      "sampleCount": 46,
+      "p50FrameMs": 11.350000143051147,
+      "p95FrameMs": 26.875,
+      "meanFrameMs": 12.930434776389085,
+      "medianDrawCalls": 30,
+      "triangles": 15822,
+      "textureCount": 1,
+      "shaderProgramCount": 7,
+      "mountMs": 61.59999990463257,
+      "generatedGeometryBytes": 120956
+    },
+    {
+      "mode": "baseline",
+      "index": 2,
+      "sampleCount": 50,
+      "p50FrameMs": 10.5,
+      "p95FrameMs": 22.284999990463227,
+      "meanFrameMs": 11.888000001907349,
+      "medianDrawCalls": 49,
+      "triangles": 16296,
+      "textureCount": 0,
+      "shaderProgramCount": 4,
+      "mountMs": 2.8000001907348633,
+      "generatedGeometryBytes": 43356
+    },
+    {
+      "mode": "voxel",
+      "index": 3,
+      "sampleCount": 47,
+      "p50FrameMs": 11,
+      "p95FrameMs": 24.01999983787532,
+      "meanFrameMs": 12.257446806481544,
+      "medianDrawCalls": 30,
+      "triangles": 15822,
+      "textureCount": 1,
+      "shaderProgramCount": 7,
+      "mountMs": 53.09999990463257,
+      "generatedGeometryBytes": 120956
+    },
+    {
+      "mode": "baseline",
+      "index": 4,
+      "sampleCount": 52,
+      "p50FrameMs": 10.699999809265137,
+      "p95FrameMs": 17.134999871253967,
+      "meanFrameMs": 11.340384620886582,
+      "medianDrawCalls": 49,
+      "triangles": 16296,
+      "textureCount": 0,
+      "shaderProgramCount": 4,
+      "mountMs": 3.700000286102295,
+      "generatedGeometryBytes": 43356
+    },
+    {
+      "mode": "voxel",
+      "index": 5,
+      "sampleCount": 52,
+      "p50FrameMs": 10.450000047683716,
+      "p95FrameMs": 15.72000017166137,
+      "meanFrameMs": 11.321153851655808,
+      "medianDrawCalls": 30,
+      "triangles": 15822,
+      "textureCount": 1,
+      "shaderProgramCount": 7,
+      "mountMs": 44.799999713897705,
+      "generatedGeometryBytes": 120956
+    }
+  ],
+  "referenceProfile": {
+    "profileName": "local-reference",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+    "platform": "MacIntel",
+    "hardware": "Google Inc. (Apple)",
+    "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M4, Unspecified Version)",
+    "viewport": {
+      "width": 1600,
+      "height": 900
+    },
+    "dpr": 1,
+    "timestamp": "2026-09-05T11:36:15.114Z",
+    "sourceCommit": "6c6a5fdbe5494280e16eebca61fc06df27c315d3",
+    "dirtyBuild": true,
+    "hardwarePowerContext": "unknown"
+  },
+  "gpuTimer": {
+    "status": "not-measured",
+    "values": null
+  },
+  "conclusion": {
+    "status": "inconclusive",
+    "drawCallReductionPct": null,
+    "p95ImprovementPct": null,
+    "secondaryRegressionPct": null,
+    "reasons": [
+      "Diagnostic, incomplete, or incorrectly ordered evidence is inconclusive."
+    ]
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "generatedAt": "2026-09-06T12:10:48.682Z",
+  "sourceNonblankLines": 1717,
+  "serializedVoxelAssetBytes": 854487,
+  "generatedMeshBytes": 121256,
+  "productionBundleBytes": 548768,
+  "productionBuildMs": 712.684708,
+  "note": "Local Baseline/Voxel renderer comparison does not measure upstream source-code savings."
+}

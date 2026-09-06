@@ -6,9 +6,12 @@
   "scripts": {
     "dev": "vite",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --exclude tests/e2e/**",
+    "test": "vitest run --exclude 'tests/e2e/**'",
     "build": "vite build",
+    "preview": "vite preview",
     "test:e2e": "playwright test",
+    "benchmark:capture": "node scripts/benchmark-capture.mjs",
+    "benchmark:metrics": "node scripts/explanatory-metrics.mjs",
     "check": "npm run typecheck && npm test && npm run build"
   },
   "dependencies": { "three": "^0.179.1" },

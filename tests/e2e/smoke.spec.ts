@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
+import { validateBenchmarkReport } from '../../src/benchmark';
 test.setTimeout(60000);
 test('baseline slice renders, fixed cameras work, and mode switch preserves live state/infrastructure', async ({ page }) => {
   await page.goto('/');
@@ -113,4 +114,48 @@ test('movement prompt and E activation persist across both renderer modes', asyn
   await page.locator('#mode-toggle').click(); await expect(page.locator('#mode-label')).toHaveText('Baseline Mode');
   await expect(root).toHaveAttribute('data-dispensed-drink', 'true');
   expect(consoleErrors).toEqual([]);
+});
+
+test('diagnostic benchmark downloads six legs and cancellation restores play state', async ({ page }) => {
+  test.setTimeout(30000);
+  await page.goto('/');
+  const root = page.locator('#scene-root');
+  await page.locator('[data-marker="crossing"]').click();
+  const before = await Promise.all(['mode', 'active-marker', 'player-x', 'player-z', 'train-offset'].map(key => root.getAttribute(`data-${key}`)));
+  await page.locator('#benchmark-diagnostic').click();
+  await expect(page.locator('#benchmark-cancel')).toBeVisible();
+  await expect(root).toHaveAttribute('data-active-marker', 'overview');
+  await page.keyboard.press('2'); await page.keyboard.press('e'); await page.keyboard.press('w');
+  await expect(root).toHaveAttribute('data-active-marker', 'overview');
+  await page.locator('#benchmark-cancel').click();
+  await expect(page.locator('#benchmark-status')).toContainText('invalidated: cancelled');
+  const restored = await Promise.all(['mode', 'active-marker', 'player-x', 'player-z', 'train-offset'].map(key => root.getAttribute(`data-${key}`)));
+  expect(restored.slice(0, 4)).toEqual(before.slice(0, 4));
+  expect(Math.abs(Number(restored[4]) - Number(before[4]))).toBeLessThan(5);
+  await page.locator('#benchmark-diagnostic').click();
+  await expect(page.locator('#benchmark-download')).toBeVisible({ timeout: 15000 });
+  const download = page.waitForEvent('download'); await page.locator('#benchmark-download').click();
+  const artifact = await download;
+  expect(artifact.suggestedFilename()).toBe('sakura-crossing-benchmark.json');
+  const stream = await artifact.createReadStream(); let text = '';
+  for await (const chunk of stream!) text += String(chunk);
+  const report: unknown = JSON.parse(text);
+  expect(validateBenchmarkReport(report)).toBe(true);
+  if (!validateBenchmarkReport(report)) throw new Error('Downloaded benchmark report failed schema validation');
+  expect(report.diagnostic).toBe(true); expect(report.legs).toHaveLength(6);
+  expect(report.legs.map(leg => leg.mode)).toEqual(['baseline', 'voxel', 'baseline', 'voxel', 'baseline', 'voxel']);
+  expect(report.legs.every(leg => leg.sampleCount > 0)).toBe(true);
+});
+
+test('benchmark invalidates immediately on visibility and context loss', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('#benchmark-diagnostic').click();
+  await page.evaluate(() => {
+    Object.defineProperty(document, 'visibilityState', { configurable: true, value: 'hidden' });
+    window.dispatchEvent(new Event('visibilitychange'));
+  });
+  await expect(page.locator('#benchmark-status')).toContainText('visibility lost');
+  await page.locator('#benchmark-diagnostic').click();
+  await page.locator('canvas').dispatchEvent('webglcontextlost');
+  await expect(page.locator('#benchmark-status')).toContainText('WebGL context lost');
 });

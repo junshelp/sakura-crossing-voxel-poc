@@ -1,0 +1,125 @@
+{
+  "schema": "sakura-crossing-benchmark/v1",
+  "diagnostic": false,
+  "seed": 20260904,
+  "durations": {
+    "warmupMs": 5000,
+    "sampleMs": 30000
+  },
+  "legs": [
+    {
+      "mode": "baseline",
+      "index": 0,
+      "sampleCount": 1601,
+      "p50FrameMs": 18.09999990463257,
+      "p95FrameMs": 24,
+      "meanFrameMs": 18.72960649617847,
+      "medianDrawCalls": 51,
+      "triangles": 16320,
+      "textureCount": 0,
+      "shaderProgramCount": 4,
+      "mountMs": 1.3000001907348633,
+      "generatedGeometryBytes": 43356
+    },
+    {
+      "mode": "voxel",
+      "index": 1,
+      "sampleCount": 1583,
+      "p50FrameMs": 18.399999618530273,
+      "p95FrameMs": 22.800000143051147,
+      "meanFrameMs": 18.940619077700532,
+      "medianDrawCalls": 31,
+      "triangles": 15846,
+      "textureCount": 1,
+      "shaderProgramCount": 7,
+      "mountMs": 55.5,
+      "generatedGeometryBytes": 120956
+    },
+    {
+      "mode": "baseline",
+      "index": 2,
+      "sampleCount": 1607,
+      "p50FrameMs": 18.199999809265137,
+      "p95FrameMs": 21.63999986648556,
+      "meanFrameMs": 18.662103298070832,
+      "medianDrawCalls": 51,
+      "triangles": 16320,
+      "textureCount": 0,
+      "shaderProgramCount": 4,
+      "mountMs": 1.3000001907348633,
+      "generatedGeometryBytes": 43356
+    },
+    {
+      "mode": "voxel",
+      "index": 3,
+      "sampleCount": 1583,
+      "p50FrameMs": 18.399999618530273,
+      "p95FrameMs": 23.190000247955307,
+      "meanFrameMs": 18.926974099870744,
+      "medianDrawCalls": 31,
+      "triangles": 15846,
+      "textureCount": 1,
+      "shaderProgramCount": 7,
+      "mountMs": 35.700000286102295,
+      "generatedGeometryBytes": 120956
+    },
+    {
+      "mode": "baseline",
+      "index": 4,
+      "sampleCount": 1589,
+      "p50FrameMs": 18.299999713897705,
+      "p95FrameMs": 23.479999828338595,
+      "meanFrameMs": 18.874197608498804,
+      "medianDrawCalls": 51,
+      "triangles": 16320,
+      "textureCount": 0,
+      "shaderProgramCount": 4,
+      "mountMs": 1.3000001907348633,
+      "generatedGeometryBytes": 43356
+    },
+    {
+      "mode": "voxel",
+      "index": 5,
+      "sampleCount": 1579,
+      "p50FrameMs": 18.40000009536743,
+      "p95FrameMs": 23.920000076293928,
+      "meanFrameMs": 18.994173527669908,
+      "medianDrawCalls": 31,
+      "triangles": 15846,
+      "textureCount": 1,
+      "shaderProgramCount": 7,
+      "mountMs": 34.30000019073486,
+      "generatedGeometryBytes": 120956
+    }
+  ],
+  "referenceProfile": {
+    "profileName": "SwiftShader software constraint / headless shell",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.7922.34 Safari/537.36",
+    "platform": "MacIntel",
+    "hardware": "Google Inc. (Google)",
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)",
+    "viewport": {
+      "width": 1600,
+      "height": 900
+    },
+    "dpr": 1,
+    "timestamp": "2026-09-06T12:18:59.390Z",
+    "sourceCommit": "6c6a5fdbe5494280e16eebca61fc06df27c315d3",
+    "dirtyBuild": true,
+    "hardwarePowerContext": "Same Apple M4 Mac mini; 24 GB RAM; macOS 26.5.2; AC power; software SwiftShader; headless shell; host background activity not controlled"
+  },
+  "gpuTimer": {
+    "status": "unsupported",
+    "values": null
+  },
+  "conclusion": {
+    "status": "revise",
+    "drawCallReductionPct": 39.21568627450981,
+    "p95ImprovementPct": 1.235091918668929,
+    "secondaryRegressionPct": null,
+    "reasons": [
+      "Median draw-call reduction is below 50%.",
+      "p95 frame-time improvement is below 20%."
+    ]
+  }
+}

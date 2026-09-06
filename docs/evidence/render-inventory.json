@@ -1,0 +1,8 @@
+{
+  "sourceCommit": "6c6a5fdbe5494280e16eebca61fc06df27c315d3",
+  "method": "Mount each adapter independently from SAMPLE_SCENE and traverse semantic roots; count objects with isMesh/isPoints.",
+  "scope": "All adapter-owned scene objects, including hidden drink. Shared infrastructure excluded. This is not a measured draw-call count.",
+  "baseline": { "meshObjects": 96, "pointsObjects": 1, "semanticRoots": 17 },
+  "voxel": { "meshObjects": 44, "pointsObjects": 1, "semanticRoots": 17 },
+  "interpretation": "The largest object-count savings occur in cherry trees, fence and train. Camera culling and shared infrastructure can reduce the improvement visible in actual frame metrics."
+}

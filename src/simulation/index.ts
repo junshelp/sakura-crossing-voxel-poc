@@ -88,6 +88,13 @@ export class CrossingSimulation {
 
   get snapshot(): CrossingSnapshot { return this.current; }
 
+  /** Restore a previously captured deterministic state for benchmark replay. */
+  restore(snapshot: CrossingSnapshot): CrossingSnapshot {
+    assertFiniteCrossingSnapshot(snapshot);
+    this.current = snapshotFor(snapshot.trainOffset, snapshot.trainProgression, snapshot.dispensedDrink);
+    return this.current;
+  }
+
   /** Advance by finite non-negative seconds. Invalid time is a safe no-op. */
   step(dt: number): CrossingSnapshot {
     if (!Number.isFinite(dt) || dt < 0) return this.current;

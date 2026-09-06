@@ -1,0 +1,125 @@
+{
+  "schema": "sakura-crossing-benchmark/v1",
+  "diagnostic": false,
+  "seed": 20260904,
+  "durations": {
+    "warmupMs": 5000,
+    "sampleMs": 30000
+  },
+  "legs": [
+    {
+      "mode": "baseline",
+      "index": 0,
+      "sampleCount": 1867,
+      "p50FrameMs": 16,
+      "p95FrameMs": 26.5,
+      "meanFrameMs": 16.047562935292305,
+      "medianDrawCalls": 51,
+      "triangles": 16320,
+      "textureCount": 0,
+      "shaderProgramCount": 4,
+      "mountMs": 1.5,
+      "generatedGeometryBytes": 43356
+    },
+    {
+      "mode": "voxel",
+      "index": 1,
+      "sampleCount": 1824,
+      "p50FrameMs": 18.59999990463257,
+      "p95FrameMs": 26.5,
+      "meanFrameMs": 16.43399122827932,
+      "medianDrawCalls": 31,
+      "triangles": 15846,
+      "textureCount": 1,
+      "shaderProgramCount": 7,
+      "mountMs": 65.19999980926514,
+      "generatedGeometryBytes": 120956
+    },
+    {
+      "mode": "baseline",
+      "index": 2,
+      "sampleCount": 1868,
+      "p50FrameMs": 16.450000047683716,
+      "p95FrameMs": 26.5,
+      "meanFrameMs": 16.05390792281009,
+      "medianDrawCalls": 51,
+      "triangles": 16320,
+      "textureCount": 0,
+      "shaderProgramCount": 4,
+      "mountMs": 2.8000001907348633,
+      "generatedGeometryBytes": 43356
+    },
+    {
+      "mode": "voxel",
+      "index": 3,
+      "sampleCount": 1856,
+      "p50FrameMs": 16.649999856948853,
+      "p95FrameMs": 26.524999976158142,
+      "meanFrameMs": 16.155980603448253,
+      "medianDrawCalls": 31,
+      "triangles": 15846,
+      "textureCount": 1,
+      "shaderProgramCount": 7,
+      "mountMs": 61.19999980926514,
+      "generatedGeometryBytes": 120956
+    },
+    {
+      "mode": "baseline",
+      "index": 4,
+      "sampleCount": 1852,
+      "p50FrameMs": 16.950000047683716,
+      "p95FrameMs": 26.5,
+      "meanFrameMs": 16.185205183585282,
+      "medianDrawCalls": 51,
+      "triangles": 16320,
+      "textureCount": 0,
+      "shaderProgramCount": 4,
+      "mountMs": 1.5999999046325684,
+      "generatedGeometryBytes": 43356
+    },
+    {
+      "mode": "voxel",
+      "index": 5,
+      "sampleCount": 2171,
+      "p50FrameMs": 13.100000381469727,
+      "p95FrameMs": 27.199999809265137,
+      "meanFrameMs": 13.809304467987019,
+      "medianDrawCalls": 31,
+      "triangles": 15846,
+      "textureCount": 1,
+      "shaderProgramCount": 7,
+      "mountMs": 59.40000009536743,
+      "generatedGeometryBytes": 120956
+    }
+  ],
+  "referenceProfile": {
+    "profileName": "Apple M4 Metal / Chromium headless",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+    "platform": "MacIntel",
+    "hardware": "Google Inc. (Apple)",
+    "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M4, Unspecified Version)",
+    "viewport": {
+      "width": 1600,
+      "height": 900
+    },
+    "dpr": 1,
+    "timestamp": "2026-09-06T12:14:46.882Z",
+    "sourceCommit": "6c6a5fdbe5494280e16eebca61fc06df27c315d3",
+    "dirtyBuild": true,
+    "hardwarePowerContext": "Mac mini Mac16,10; Apple M4 10 CPU cores / 10 GPU cores; 24 GB RAM; macOS 26.5.2; AC power; headless Chromium channel; host background activity not controlled"
+  },
+  "gpuTimer": {
+    "status": "not-measured",
+    "values": null
+  },
+  "conclusion": {
+    "status": "revise",
+    "drawCallReductionPct": 39.21568627450981,
+    "p95ImprovementPct": -0.09433953267223849,
+    "secondaryRegressionPct": null,
+    "reasons": [
+      "Median draw-call reduction is below 50%.",
+      "p95 frame-time improvement is below 20%."
+    ]
+  }
+}
