@@ -9,6 +9,7 @@ Implement and validate the approved Voxel Crossing PoC through packages W001-W00
 - Harness draft: approved for commit and push
 - Implementation packages: W001-W007 verified; final evidence travels in W007 commit
 - Product recommendation: REVISE — primary draw-call and p95 targets missed
+- W007 evidence commit: `afcf3cc`; CI event-boundary test correction: this follow-up commit
 - Visual Acceptance: pending
 - GitHub publication beyond the existing PRD issue: not authorized
 

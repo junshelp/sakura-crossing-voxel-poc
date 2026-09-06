@@ -1,6 +1,74 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Locator, type Page } from '@playwright/test';
 import { validateBenchmarkReport } from '../../src/benchmark';
 test.setTimeout(60000);
+
+const OBSERVED_STATE_KEYS = [
+  'mode', 'active-marker', 'player-x', 'player-z', 'player-eye-height',
+  'player-yaw', 'player-pitch', 'train-offset', 'crossing-phase', 'dispensed-drink',
+] as const;
+type ObservedState = Record<(typeof OBSERVED_STATE_KEYS)[number], string | null>;
+type ClickObservation = { before: ObservedState; after: ObservedState };
+
+/**
+ * Observe a real click at the DOM event boundary. The capture listener runs
+ * before the application's target handler and the document bubble listener
+ * runs after it, both within the same click task (so no RAF can intervene).
+ */
+async function clickAndObserve(page: Page, button: Locator): Promise<ClickObservation> {
+  const id = await button.getAttribute('id');
+  if (!id) throw new Error('event-boundary observer requires an id-bearing button');
+  const token = `voxel-click-${Date.now()}-${Math.random()}`;
+  await page.evaluate(({ id, keys, token }) => {
+    const root = document.querySelector<HTMLElement>('#scene-root');
+    const target = document.getElementById(id);
+    if (!root || !target) throw new Error(`missing click observer target: ${id}`);
+    const snapshot = (): ObservedState => Object.fromEntries(
+      keys.map((key) => [key, root.getAttribute(`data-${key}`)]),
+    ) as ObservedState;
+    const observer = {
+      before: null as ObservedState | null,
+      after: null as ObservedState | null,
+      capture: (event: Event) => { if (event.target === target) observer.before = snapshot(); },
+      bubble: (event: Event) => { if (event.target === target) observer.after = snapshot(); },
+    };
+    document.addEventListener('click', observer.capture, true);
+    document.addEventListener('click', observer.bubble);
+    const observers = ((window as unknown as { __voxelClickObservers?: Record<string, typeof observer> }).__voxelClickObservers
+      ??= {});
+    observers[token] = observer;
+  }, { id, keys: OBSERVED_STATE_KEYS, token });
+  try {
+    await button.click();
+    return await page.evaluate((token) => {
+      const observers = (window as unknown as { __voxelClickObservers?: Record<string, ClickObservation & {
+        capture?: EventListener; bubble?: EventListener;
+      }> }).__voxelClickObservers;
+      const observer = observers?.[token] as (ClickObservation & { capture?: EventListener; bubble?: EventListener }) | undefined;
+      if (!observer?.before || !observer.after) throw new Error('click event-boundary observer did not see both click phases');
+      return { before: observer.before, after: observer.after };
+    }, token);
+  } finally {
+    await page.evaluate((token) => {
+      const observers = (window as unknown as { __voxelClickObservers?: Record<string, {
+        capture: EventListener; bubble: EventListener;
+      }> }).__voxelClickObservers;
+      const observer = observers?.[token];
+      if (observer) {
+        document.removeEventListener('click', observer.capture, true);
+        document.removeEventListener('click', observer.bubble);
+        delete observers![token];
+      }
+    }, token).catch(() => undefined);
+  }
+}
+
+function expectBoundaryPreserved(observation: ClickObservation, changed: keyof ObservedState): void {
+  expect(observation.before[changed]).not.toBe(observation.after[changed]);
+  for (const key of OBSERVED_STATE_KEYS) {
+    if (key !== changed) expect(observation.after[key]).toBe(observation.before[key]);
+  }
+}
+
 test('baseline slice renders, fixed cameras work, and mode switch preserves live state/infrastructure', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('canvas')).toBeVisible();
@@ -22,7 +90,8 @@ test('baseline slice renders, fixed cameras work, and mode switch preserves live
   await page.locator('[data-marker="crossing"]').click();
   await expect(root).toHaveAttribute('data-active-marker', 'crossing');
   const playerBefore = await Promise.all(['x', 'z', 'eye-height', 'yaw', 'pitch'].map((axis) => root.getAttribute(`data-player-${axis}`)));
-  await page.locator('#mode-toggle').click();
+  const toVoxel = await clickAndObserve(page, page.locator('#mode-toggle'));
+  expectBoundaryPreserved(toVoxel, 'mode');
   await expect(page.locator('#mode-label')).toHaveText('Voxel Mode');
   await expect(page.locator('canvas')).toBeVisible();
   await expect(root).toHaveAttribute('data-voxel-entity-count', '17');
@@ -34,14 +103,23 @@ test('baseline slice renders, fixed cameras work, and mode switch preserves live
   const voxelDrawCalls = Number(await root.getAttribute('data-renderer-draw-calls'));
   expect(voxelDrawCalls).toBeGreaterThan(0);
   expect(voxelDrawCalls).toBeLessThan(baselineDrawCalls);
-  const playerAfter = await Promise.all(['x', 'z', 'eye-height', 'yaw', 'pitch'].map((axis) => root.getAttribute(`data-player-${axis}`)));
-  expect(playerAfter).toEqual(playerBefore);
+  expect(toVoxel.after.mode).toBe('voxel');
+  expect(toVoxel.after['player-x']).toBe(playerBefore[0]);
+  expect(toVoxel.after['player-z']).toBe(playerBefore[1]);
+  expect(toVoxel.after['player-eye-height']).toBe(playerBefore[2]);
+  expect(toVoxel.after['player-yaw']).toBe(playerBefore[3]);
+  expect(toVoxel.after['player-pitch']).toBe(playerBefore[4]);
   await expect(root).toHaveAttribute('data-continuous-infrastructure-id', infrastructureId!);
   await expect(root).toHaveAttribute('data-continuous-infrastructure-child-count', childCount!);
-  await page.locator('#mode-toggle').click();
+  const toBaseline = await clickAndObserve(page, page.locator('#mode-toggle'));
+  expectBoundaryPreserved(toBaseline, 'mode');
   await expect(page.locator('#mode-label')).toHaveText('Baseline Mode');
-  const playerRoundTrip = await Promise.all(['x', 'z', 'eye-height', 'yaw', 'pitch'].map((axis) => root.getAttribute(`data-player-${axis}`)));
-  expect(playerRoundTrip).toEqual(playerBefore);
+  expect(toBaseline.after.mode).toBe('baseline');
+  expect(toBaseline.after['player-x']).toBe(playerBefore[0]);
+  expect(toBaseline.after['player-z']).toBe(playerBefore[1]);
+  expect(toBaseline.after['player-eye-height']).toBe(playerBefore[2]);
+  expect(toBaseline.after['player-yaw']).toBe(playerBefore[3]);
+  expect(toBaseline.after['player-pitch']).toBe(playerBefore[4]);
   await expect(root).toHaveAttribute('data-active-marker', 'crossing');
   await expect(root).toHaveAttribute('data-continuous-infrastructure-id', infrastructureId!);
   await expect(root).toHaveAttribute('data-continuous-infrastructure-child-count', childCount!);
@@ -89,15 +167,16 @@ test('movement prompt and E activation persist across both renderer modes', asyn
   await expect(root).toHaveAttribute('data-crossing-phase', 'approach');
   await waitForPhase(page, /clearing/); await waitForPhase(page, /^open$/);
 
-  await page.locator('#mode-toggle').click(); await expect(page.locator('#mode-label')).toHaveText('Voxel Mode');
+  const toVoxel = await clickAndObserve(page, page.locator('#mode-toggle'));
+  expectBoundaryPreserved(toVoxel, 'mode');
+  await expect(page.locator('#mode-label')).toHaveText('Voxel Mode');
   await page.keyboard.press('e'); await expect(root).toHaveAttribute('data-crossing-phase', 'approach');
   await page.waitForTimeout(1800); await expect(root).toHaveAttribute('data-crossing-phase', /closing|passing/);
-  const beforeToggle = Number(await root.getAttribute('data-train-offset'));
-  await page.locator('#mode-toggle').click(); await expect(page.locator('#mode-label')).toHaveText('Baseline Mode');
-  await expect(root).toHaveAttribute('data-crossing-phase', /closing|passing/);
-  const afterToggle = Number(await root.getAttribute('data-train-offset'));
-  expect(afterToggle).toBeGreaterThan(beforeToggle);
-  expect(afterToggle - beforeToggle).toBeLessThan(10);
+  const toBaseline = await clickAndObserve(page, page.locator('#mode-toggle'));
+  expectBoundaryPreserved(toBaseline, 'mode');
+  await expect(page.locator('#mode-label')).toHaveText('Baseline Mode');
+  expect(toBaseline.after['train-offset']).toBe(toBaseline.before['train-offset']);
+  expect(toBaseline.after['crossing-phase']).toMatch(/closing|passing/);
   await waitForPhase(page, /clearing/); await waitForPhase(page, /^open$/);
 
   // From the relay, walk east and south around the colliders before returning
@@ -108,11 +187,15 @@ test('movement prompt and E activation persist across both renderer modes', asyn
   await moveUntil(page, 'z', 's', (value) => value >= -9.8);
   await expect(root).toHaveAttribute('data-current-interaction-id', 'dispense-drink');
   await page.keyboard.press('e'); await expect(root).toHaveAttribute('data-dispensed-drink', 'true');
-  await page.locator('#mode-toggle').click(); await expect(page.locator('#mode-label')).toHaveText('Voxel Mode');
-  await expect(root).toHaveAttribute('data-dispensed-drink', 'true');
+  const drinkToVoxel = await clickAndObserve(page, page.locator('#mode-toggle'));
+  expectBoundaryPreserved(drinkToVoxel, 'mode');
+  await expect(page.locator('#mode-label')).toHaveText('Voxel Mode');
+  expect(drinkToVoxel.after['dispensed-drink']).toBe('true');
   await page.locator('#interaction-prompt').click(); await expect(root).toHaveAttribute('data-dispensed-drink', 'true');
-  await page.locator('#mode-toggle').click(); await expect(page.locator('#mode-label')).toHaveText('Baseline Mode');
-  await expect(root).toHaveAttribute('data-dispensed-drink', 'true');
+  const drinkToBaseline = await clickAndObserve(page, page.locator('#mode-toggle'));
+  expectBoundaryPreserved(drinkToBaseline, 'mode');
+  await expect(page.locator('#mode-label')).toHaveText('Baseline Mode');
+  expect(drinkToBaseline.after['dispensed-drink']).toBe('true');
   expect(consoleErrors).toEqual([]);
 });
 
@@ -121,17 +204,14 @@ test('diagnostic benchmark downloads six legs and cancellation restores play sta
   await page.goto('/');
   const root = page.locator('#scene-root');
   await page.locator('[data-marker="crossing"]').click();
-  const before = await Promise.all(['mode', 'active-marker', 'player-x', 'player-z', 'train-offset'].map(key => root.getAttribute(`data-${key}`)));
-  await page.locator('#benchmark-diagnostic').click();
+  const started = await clickAndObserve(page, page.locator('#benchmark-diagnostic'));
   await expect(page.locator('#benchmark-cancel')).toBeVisible();
   await expect(root).toHaveAttribute('data-active-marker', 'overview');
   await page.keyboard.press('2'); await page.keyboard.press('e'); await page.keyboard.press('w');
   await expect(root).toHaveAttribute('data-active-marker', 'overview');
-  await page.locator('#benchmark-cancel').click();
+  const cancelled = await clickAndObserve(page, page.locator('#benchmark-cancel'));
   await expect(page.locator('#benchmark-status')).toContainText('invalidated: cancelled');
-  const restored = await Promise.all(['mode', 'active-marker', 'player-x', 'player-z', 'train-offset'].map(key => root.getAttribute(`data-${key}`)));
-  expect(restored.slice(0, 4)).toEqual(before.slice(0, 4));
-  expect(Math.abs(Number(restored[4]) - Number(before[4]))).toBeLessThan(5);
+  expect(cancelled.after).toEqual(started.before);
   await page.locator('#benchmark-diagnostic').click();
   await expect(page.locator('#benchmark-download')).toBeVisible({ timeout: 15000 });
   const download = page.waitForEvent('download'); await page.locator('#benchmark-download').click();

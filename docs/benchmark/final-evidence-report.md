@@ -70,6 +70,9 @@ rendering: these are separate browser configurations and presentation schedules.
 - Automated checks: 60 unit tests; typecheck; production build; 4 production
   Playwright scenarios. Root additionally checked actual DPR restoration and
   real WebGL context-loss invalidation on the Metal backend.
+  A post-push CI test-only correction replaced latency-sensitive distance bounds
+  with exact real-click event-boundary observations; root reran all checks
+  (4/4 browser scenarios, 42.0s). Measured runtime/geometry remained unchanged.
 - [Baseline crossing](../evidence/visuals/baseline-crossing.png),
   [Voxel crossing](../evidence/visuals/voxel-crossing.png), and paired drink
   screenshots are technical evidence, not human Visual Acceptance.
